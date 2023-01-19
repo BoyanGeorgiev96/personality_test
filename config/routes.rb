@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
+  scope '/api/v1' do
+    get 'personality_test', to: 'personality_tests#index'
+    resource :personality_test, only: %i[update create]
+    get '/login', to: 'sessions#create'
+  end
 end

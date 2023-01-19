@@ -1,5 +1,5 @@
 class PersonalityTestsController < ApplicationController
-  before_action :login
+  before_action :find_user
 
   def index
     questions = Question.includes(:answers).select(:id, :content, :score)
@@ -53,8 +53,7 @@ class PersonalityTestsController < ApplicationController
     UserAnswer.create!(user_id: current_user.id, answer_id:)
   end
 
-  def login
+  def find_user
     raise ApiException::Unauthorized unless current_user
-    # redirect_to login_path unless current_user
   end
 end

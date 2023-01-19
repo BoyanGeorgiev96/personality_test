@@ -9,7 +9,7 @@ RSpec.describe UserAnswer, type: :model do
     create(:user)
     create(:answer)
     create(:user_answer)
-    UserAnswer.destroy_old_answer(1, 1)
+    UserAnswer.old_answer(1, 1).destroy
     expect(UserAnswer.first).to be_nil
   end
 end

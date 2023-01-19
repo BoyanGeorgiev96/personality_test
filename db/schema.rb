@@ -48,14 +48,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_18_213210) do
     t.index ["user_id", "answer_id"], name: "index_user_answers_on_user_id_and_answer_id", unique: true
   end
 
-  create_table "user_question_answers", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "question_id"
-    t.integer "answer_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
   create_table "user_results", force: :cascade do |t|
     t.integer "user_id"
     t.integer "result_id"

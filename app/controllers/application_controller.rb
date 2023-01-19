@@ -1,4 +1,6 @@
 class ApplicationController < ActionController::API
+  include ApiException::Handler
+
   private
 
   def current_user

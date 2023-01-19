@@ -9,20 +9,7 @@ RSpec.describe Answer, type: :model do
   it { should have_many(:user_answers) }
   it { should have_many(:users) }
 
-  it 'is expected to select attributes for question' do
-    question = create(:question)
-    3.times do |i|
-      create(:answer)
-      create(:question_answer, answer_id: i + 1)
-    end
-    answers = question.answers.select_attributes_for_questions
-    expect(answers.size).to eql(3)
-    answers.each do |answer|
-      expect(answer.attributes.keys).to eql(%w[id content score])
-    end
-  end
-
-  it 'is expected to select answer ids' do
+  it 'is expected to pluck correct answer ids' do
     answer1 = create(:answer)
     answer2 = create(:answer)
     user = create(:user)

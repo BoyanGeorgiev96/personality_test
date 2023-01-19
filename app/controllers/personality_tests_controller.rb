@@ -2,15 +2,17 @@ class PersonalityTestsController < ApplicationController
   before_action :login
 
   def index
-    questions = Question.all.map do |question|
-      {
+    questions = Question.includes(:answers).select(:id, :content, :score)
+    questions_and_answers = []
+    questions.each do |question|
+      questions_and_answers << {
         id: question.id,
         content: question.content,
-        answers: question.answers.select_attributes_for_questions
+        answers: question.answers
       }
     end
     answered = current_user.answers.pluck_ids
-    render json: { questions:, answered: }
+    render json: { questions_and_answers:, answered: }
   end
 
   def create
@@ -25,24 +27,22 @@ class PersonalityTestsController < ApplicationController
   end
 
   def update
+    answer = UserAnswer.new
     ActiveRecord::Base.transaction do
-      UserAnswer.destroy_old_answer(current_user.id, params[:old_answer_id]) # handle old useranswer not existing
-      answer = create_user_answer(params[:new_answer_id])
-      render json: { answer: } and return
-    end
+      old_answer = UserAnswer.old_answer(current_user.id, params[:old_answer_id]) # handle old useranswer not existing
+      raise ActiveRecord::RecordNotFound unless old_answer
 
-    # raise some error and errorhandler it instead of rendering here.
-    render json: {}
+      old_answer.destroy
+      answer = create_user_answer(params[:new_answer_id])
+    end
+    render json: { answer: } and return
   end
 
   def calculate_result
     score = current_user.answers.sum(:score)
     result = Result.calculate(score)
     user_result = UserResult.new(user_id: current_user.id, result_id: result.id)
-    return result if user_result.save
-
-    # maybe raise some error? and errorhandler it
-    render json: {}
+    return result if user_result.save!
   end
 
   def all_questions_answered?
@@ -50,15 +50,11 @@ class PersonalityTestsController < ApplicationController
   end
 
   def create_user_answer(answer_id = params[:answer_id])
-    user_answer = UserAnswer.new(user_id: current_user.id, answer_id:)
-    return user_answer if user_answer.save
-
-    # maybe raise some error? and errorhandler it instead of rendering here.
-    render json: {}
+    UserAnswer.create!(user_id: current_user.id, answer_id:)
   end
 
   def login
-    # just raise an error as it is surely an unauthorized access
-    redirect_to login_path unless current_user
+    raise ApiException::Unauthorized unless current_user
+    # redirect_to login_path unless current_user
   end
 end

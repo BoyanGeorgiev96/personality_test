@@ -8,6 +8,5 @@ class Answer < ApplicationRecord
   has_many :user_answers
   has_many :users, through: :user_answers
 
-  scope :select_attributes_for_questions, -> { select(:id, :content, :score) }
   scope :pluck_ids, -> { pluck(:id) }
 end

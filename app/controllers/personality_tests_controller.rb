@@ -6,8 +6,10 @@ class PersonalityTestsController < ApplicationController
     questions_and_answers = []
     questions.each do |question|
       questions_and_answers << {
-        id: question.id,
-        content: question.content,
+        question: {
+          id: question.id,
+          content: question.content
+        },
         answers: question.answers
       }
     end

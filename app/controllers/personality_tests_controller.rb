@@ -1,5 +1,5 @@
 class PersonalityTestsController < ApplicationController
-  before_action :find_user
+  before_action :reject_without_user
 
   def index
     questions = Question.includes(:answers).select(:id, :content, :score)
@@ -29,7 +29,7 @@ class PersonalityTestsController < ApplicationController
   def update
     answer = UserAnswer.new
     ActiveRecord::Base.transaction do
-      old_answer = UserAnswer.old_answer(current_user.id, params[:old_answer_id]) # handle old useranswer not existing
+      old_answer = UserAnswer.old_answer(current_user.id, params[:old_answer_id])
       raise ActiveRecord::RecordNotFound unless old_answer
 
       old_answer.destroy
@@ -53,7 +53,7 @@ class PersonalityTestsController < ApplicationController
     UserAnswer.create!(user_id: current_user.id, answer_id:)
   end
 
-  def find_user
+  def reject_without_user
     raise ApiException::Unauthorized unless current_user
   end
 end
